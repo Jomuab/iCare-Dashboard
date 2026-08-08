@@ -68,6 +68,17 @@ export function getPeriodSubtext(period: TimePeriod): string {
   }
 }
 
+export function getDateSeed(dateStr?: string): number {
+  if (!dateStr) return 1.0;
+  let hash = 0;
+  for (let i = 0; i < dateStr.length; i++) {
+    hash = (hash << 5) - hash + dateStr.charCodeAt(i);
+    hash |= 0;
+  }
+  const norm = (Math.abs(hash) % 56) / 100; // 0.00 to 0.55
+  return 0.72 + norm;
+}
+
 export function getFilterMultiplier(filters: FilterState, includePeriod: boolean = true): number {
   let customerMult = 1.0;
   if (filters.customerType === 'HP') customerMult = 0.58;
@@ -118,6 +129,7 @@ export function getFilterMultiplier(filters: FilterState, includePeriod: boolean
 
   let centerMult = 1.0;
   if (filters.deliveryCenter === 'HEAD_OFFICE') centerMult = 0.41;
+  else if (filters.deliveryCenter === 'ADDIS_MESOB') centerMult = 0.28;
   else if (filters.deliveryCenter === 'BRANCH') centerMult = 0.52;
   else if (filters.deliveryCenter === 'WOREDA') centerMult = 0.07;
 
@@ -130,6 +142,10 @@ export function getFilterMultiplier(filters: FilterState, includePeriod: boolean
   else if (filters.ownership === 'Private/Sole') ownershipMult = 0.12;
 
   let mult = customerMult * branchMult * centerMult * woredaMult * ownershipMult;
+
+  if (filters.selectedDate) {
+    mult *= getDateSeed(filters.selectedDate);
+  }
 
   if (includePeriod) {
     const periodMult = getPeriodMultiplier(filters.period, filters.startDate, filters.endDate);
@@ -214,61 +230,85 @@ export function getFilteredApplicationsData(filters: FilterState) {
 // 3. Licenses Trend line data filtered by period & filters
 export function getFilteredTrendData(filters: FilterState) {
   const mult = getFilterMultiplier(filters, false);
+  const dateObj = filters.selectedDate ? new Date(filters.selectedDate) : new Date(2026, 7, 8);
+  const refDate = isNaN(dateObj.getTime()) ? new Date(2026, 7, 8) : dateObj;
 
   if (filters.period === 'DAILY') {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const baseVals = [120, 145, 180, 160, 210, 95, 40];
-    return days.map((day, idx) => {
-      const tot = Math.round(baseVals[idx] * mult * 2.5);
-      return {
-        period: day,
-        total: Math.max(1, tot),
+    const result = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(refDate);
+      d.setDate(d.getDate() - i);
+      const label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' });
+      const seed = getDateSeed(d.toISOString().split('T')[0]);
+      const tot = Math.max(1, Math.round(150 * mult * seed * 2.5));
+      result.push({
+        period: label,
+        total: tot,
         organizations: Math.max(0, Math.round(tot * 0.3)),
         individuals: Math.max(0, Math.round(tot * 0.7)),
-      };
-    });
+      });
+    }
+    return result;
   }
 
   if (filters.period === 'WEEKLY') {
-    const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-    const baseVals = [820, 950, 1100, 1050];
-    return weeks.map((w, idx) => {
-      const tot = Math.round(baseVals[idx] * mult * 1.5);
-      return {
-        period: w,
-        total: Math.max(1, tot),
+    const result = [];
+    for (let i = 3; i >= 0; i--) {
+      const d = new Date(refDate);
+      d.setDate(d.getDate() - i * 7);
+      const label = `Wk of ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+      const seed = getDateSeed(d.toISOString().split('T')[0]);
+      const tot = Math.max(1, Math.round(950 * mult * seed * 1.5));
+      result.push({
+        period: label,
+        total: tot,
         organizations: Math.max(0, Math.round(tot * 0.32)),
         individuals: Math.max(0, Math.round(tot * 0.68)),
-      };
-    });
+      });
+    }
+    return result;
   }
 
   if (filters.period === 'QUARTERLY') {
-    const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
-    const baseVals = [7200, 8900, 10400, 9800];
-    return quarters.map((q, idx) => {
-      const tot = Math.round(baseVals[idx] * mult);
-      return {
-        period: q,
-        total: Math.max(1, tot),
+    const q = Math.floor(refDate.getMonth() / 3) + 1;
+    const year = refDate.getFullYear();
+    const result = [];
+    for (let i = 3; i >= 0; i--) {
+      let qNum = q - i;
+      let qYear = year;
+      while (qNum <= 0) {
+        qNum += 4;
+        qYear -= 1;
+      }
+      const label = `Q${qNum} ${qYear}`;
+      const seed = getDateSeed(`${qYear}-Q${qNum}`);
+      const tot = Math.max(1, Math.round(8500 * mult * seed));
+      result.push({
+        period: label,
+        total: tot,
         organizations: Math.max(0, Math.round(tot * 0.35)),
         individuals: Math.max(0, Math.round(tot * 0.65)),
-      };
-    });
+      });
+    }
+    return result;
   }
 
   if (filters.period === 'YEARLY') {
-    const years = ['2022', '2023', '2024', '2025', '2026'];
-    const baseVals = [21000, 24500, 27800, 30140, 34200];
-    return years.map((y, idx) => {
-      const tot = Math.round(baseVals[idx] * mult);
-      return {
-        period: y,
-        total: Math.max(1, tot),
+    const year = refDate.getFullYear();
+    const result = [];
+    for (let i = 4; i >= 0; i--) {
+      const y = year - i;
+      const label = `${y}`;
+      const seed = getDateSeed(`${y}-01-01`);
+      const tot = Math.max(1, Math.round(26000 * mult * seed));
+      result.push({
+        period: label,
+        total: tot,
         organizations: Math.max(0, Math.round(tot * 0.33)),
         individuals: Math.max(0, Math.round(tot * 0.67)),
-      };
-    });
+      });
+    }
+    return result;
   }
 
   if (filters.period === 'CUSTOM') {
@@ -286,28 +326,29 @@ export function getFilteredTrendData(filters: FilterState) {
     });
   }
 
-  // Monthly default
-  const trendBase = [
-    { period: 'Jan', total: 2450, orgRate: 0.33 },
-    { period: 'Feb', total: 2890, orgRate: 0.32 },
-    { period: 'Mar', total: 3410, orgRate: 0.32 },
-    { period: 'Apr', total: 3120, orgRate: 0.33 },
-    { period: 'May', total: 3890, orgRate: 0.33 },
-    { period: 'Jun', total: 4250, orgRate: 0.33 },
-    { period: 'Jul', total: 4820, orgRate: 0.33 },
-    { period: 'Aug', total: 5310, orgRate: 0.33 },
-  ];
-
-  return trendBase.map((row) => {
-    const tot = Math.max(1, Math.round(row.total * mult));
-    const orgs = Math.round(tot * row.orgRate);
-    return {
-      period: row.period,
+  // Monthly default: show 6 months around refDate
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const curMonth = refDate.getMonth();
+  const curYear = refDate.getFullYear();
+  const result = [];
+  for (let i = 5; i >= 0; i--) {
+    let mIdx = curMonth - i;
+    let mYear = curYear;
+    while (mIdx < 0) {
+      mIdx += 12;
+      mYear -= 1;
+    }
+    const label = `${months[mIdx]} ${mYear}`;
+    const seed = getDateSeed(`${mYear}-${mIdx + 1}-01`);
+    const tot = Math.max(1, Math.round(2800 * mult * seed));
+    result.push({
+      period: label,
       total: tot,
-      organizations: orgs,
-      individuals: Math.max(0, tot - orgs),
-    };
-  });
+      organizations: Math.max(0, Math.round(tot * 0.33)),
+      individuals: Math.max(0, Math.round(tot * 0.67)),
+    });
+  }
+  return result;
 }
 
 // 4. Decisions dual-bar chart data filtered
@@ -337,34 +378,45 @@ export function getFilteredDeliveryCenterData(filters: FilterState) {
     if (filters.customerType === 'HP') {
       hf = 0;
       fhr = 0;
-      if (row.center !== 'Head Office') hp = Math.round(row.total * 0.1);
+      if (row.center !== 'AAFDA Head Office' && row.center !== 'Addis Mesob (A-Mesob)') {
+        hp = Math.round(row.total * 0.05);
+      }
     } else if (filters.customerType === 'HF') {
       hp = 0;
       fhr = 0;
-      if (row.center === 'Head Office') hf = 250;
+      if (row.center === 'AAFDA Head Office' || row.center === 'Addis Mesob (A-Mesob)') {
+        hf = 120;
+      }
     } else if (filters.customerType === 'FHR') {
       hp = 0;
       hf = 0;
-      if (row.center === 'Head Office') fhr = 180;
+      if (row.center === 'AAFDA Head Office' || row.center === 'Addis Mesob (A-Mesob)') {
+        fhr = 90;
+      }
     }
 
     // Filter delivery center applicability
-    if (filters.deliveryCenter === 'HEAD_OFFICE' && row.center !== 'Head Office') {
-      hp = Math.round(hp * 0.1);
-      hf = Math.round(hf * 0.1);
-      fhr = Math.round(fhr * 0.1);
-    } else if (filters.deliveryCenter === 'BRANCH' && row.center === 'Head Office') {
-      hp = Math.round(hp * 0.1);
+    if (filters.deliveryCenter === 'HEAD_OFFICE' && !row.center.includes('Head Office')) {
+      hp = Math.round(hp * 0.05);
+      hf = Math.round(hf * 0.05);
+      fhr = Math.round(fhr * 0.05);
+    } else if (filters.deliveryCenter === 'ADDIS_MESOB' && !row.center.includes('Addis Mesob')) {
+      hp = Math.round(hp * 0.05);
+      hf = Math.round(hf * 0.05);
+      fhr = Math.round(fhr * 0.05);
+    } else if (filters.deliveryCenter === 'BRANCH' && (row.center.includes('Head Office') || row.center.includes('Addis Mesob'))) {
+      hp = Math.round(hp * 0.05);
     } else if (filters.deliveryCenter === 'WOREDA' && row.center !== 'Woreda Centers') {
-      hp = Math.round(hp * 0.1);
-      hf = Math.round(hf * 0.1);
-      fhr = Math.round(fhr * 0.1);
+      hp = Math.round(hp * 0.05);
+      hf = Math.round(hf * 0.05);
+      fhr = Math.round(fhr * 0.05);
     }
 
     // Filter branch selection
     if (filters.branch !== 'All Branches') {
       if (
-        row.center !== 'Head Office' &&
+        !row.center.includes('Head Office') &&
+        !row.center.includes('Addis Mesob') &&
         row.center !== 'Woreda Centers' &&
         !row.center.toLowerCase().includes(filters.branch.toLowerCase())
       ) {

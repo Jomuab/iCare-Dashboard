@@ -26,7 +26,12 @@ import { BranchComparison } from './components/BranchComparison';
 import { LicenseTableModal } from './components/LicenseTableModal';
 
 export default function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 768;
+    }
+    return true;
+  });
   const [activeSidebarItem, setActiveSidebarItem] = useState('Dashboard');
 
   // Active Role state for Access Control simulation
@@ -40,6 +45,9 @@ export default function App() {
     branch: 'All Branches',
     woreda: 'ALL',
     period: 'MONTHLY',
+    startDate: '2026-08-01',
+    endDate: '2026-08-31',
+    selectedDate: '2026-08-08',
     ownership: 'ALL',
     searchQuery: '',
   });
@@ -174,7 +182,16 @@ export default function App() {
         sidebarOpen={sidebarOpen}
         activeItem={activeSidebarItem}
         setActiveItem={setActiveSidebarItem}
+        onCloseMobile={() => setSidebarOpen(false)}
       />
+
+      {/* Mobile backdrop overlay */}
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-35 md:hidden"
+        />
+      )}
 
       {/* 3. Main Content Container - Positioned AFTER fixed Sidebar (250px) and Top Nav (64px) */}
       <main className="mt-[64px] md:ml-[250px] p-4 sm:p-6 transition-all duration-200 flex-1">

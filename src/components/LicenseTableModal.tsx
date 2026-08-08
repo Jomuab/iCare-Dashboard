@@ -197,7 +197,7 @@ export const LicenseTableModal: React.FC<LicenseTableModalProps> = ({
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs">
                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
                   <p className="text-[10px] text-slate-400 font-bold uppercase">
                     Applicant / Entity

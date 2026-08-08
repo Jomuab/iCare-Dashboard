@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TimePeriod } from '../types';
 import { ChevronLeft, ChevronRight, Calendar, X, Check } from 'lucide-react';
 
@@ -7,7 +7,9 @@ interface PeriodNavigatorProps {
   onPeriodChange: (period: TimePeriod) => void;
   startDate?: string;
   endDate?: string;
+  selectedDate?: string;
   onCustomDateChange?: (start: string, end: string) => void;
+  onNavDateChange?: (newDateStr: string) => void;
 }
 
 // Calculate ISO Week Number
@@ -24,13 +26,41 @@ export const PeriodNavigator: React.FC<PeriodNavigatorProps> = ({
   onPeriodChange,
   startDate = '2026-08-01',
   endDate = '2026-08-31',
+  selectedDate = '2026-08-08',
   onCustomDateChange,
+  onNavDateChange,
 }) => {
-  // Reference date state, defaulting to August 8, 2026
-  const [navDate, setNavDate] = useState<Date>(new Date(2026, 7, 8));
+  // Reference date state
+  const [navDate, setNavDate] = useState<Date>(() => {
+    const d = new Date(selectedDate);
+    return isNaN(d.getTime()) ? new Date(2026, 7, 8) : d;
+  });
+
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [tempStart, setTempStart] = useState(startDate);
   const [tempEnd, setTempEnd] = useState(endDate);
+
+  // Keep navDate synced if selectedDate prop changes from parent
+  useEffect(() => {
+    if (selectedDate) {
+      const d = new Date(selectedDate);
+      if (!isNaN(d.getTime())) {
+        setNavDate(d);
+      }
+    }
+  }, [selectedDate]);
+
+  const updateNavDate = (newDate: Date) => {
+    setNavDate(newDate);
+    // Format YYYY-MM-DD
+    const yyyy = newDate.getFullYear();
+    const mm = String(newDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(newDate.getDate()).padStart(2, '0');
+    const dateStr = `${yyyy}-${mm}-${dd}`;
+    if (onNavDateChange) {
+      onNavDateChange(dateStr);
+    }
+  };
 
   // Navigate Previous
   const handlePrev = () => {
@@ -51,11 +81,24 @@ export const PeriodNavigator: React.FC<PeriodNavigatorProps> = ({
       case 'YEARLY':
         next.setFullYear(next.getFullYear() - 1);
         break;
-      case 'CUSTOM':
-        next.setDate(next.getDate() - 7);
-        break;
+      case 'CUSTOM': {
+        const s = new Date(tempStart);
+        const e = new Date(tempEnd);
+        const diffMs = e.getTime() - s.getTime();
+        const diffDays = Math.max(1, Math.round(diffMs / (1000 * 60 * 60 * 24)));
+        s.setDate(s.getDate() - diffDays);
+        e.setDate(e.getDate() - diffDays);
+        const sStr = s.toISOString().split('T')[0];
+        const eStr = e.toISOString().split('T')[0];
+        setTempStart(sStr);
+        setTempEnd(eStr);
+        if (onCustomDateChange) {
+          onCustomDateChange(sStr, eStr);
+        }
+        return;
+      }
     }
-    setNavDate(next);
+    updateNavDate(next);
   };
 
   // Navigate Next
@@ -77,16 +120,30 @@ export const PeriodNavigator: React.FC<PeriodNavigatorProps> = ({
       case 'YEARLY':
         next.setFullYear(next.getFullYear() + 1);
         break;
-      case 'CUSTOM':
-        next.setDate(next.getDate() + 7);
-        break;
+      case 'CUSTOM': {
+        const s = new Date(tempStart);
+        const e = new Date(tempEnd);
+        const diffMs = e.getTime() - s.getTime();
+        const diffDays = Math.max(1, Math.round(diffMs / (1000 * 60 * 60 * 24)));
+        s.setDate(s.getDate() + diffDays);
+        e.setDate(e.getDate() + diffDays);
+        const sStr = s.toISOString().split('T')[0];
+        const eStr = e.toISOString().split('T')[0];
+        setTempStart(sStr);
+        setTempEnd(eStr);
+        if (onCustomDateChange) {
+          onCustomDateChange(sStr, eStr);
+        }
+        return;
+      }
     }
-    setNavDate(next);
+    updateNavDate(next);
   };
 
   // Reset to Today
   const handleToday = () => {
-    setNavDate(new Date(2026, 7, 8));
+    const today = new Date(2026, 7, 8);
+    updateNavDate(today);
   };
 
   // Format main date display label
@@ -216,12 +273,12 @@ export const PeriodNavigator: React.FC<PeriodNavigatorProps> = ({
       </button>
 
       {/* 5. Date Label & Pill Badge matching Screenshot 1 (e.g., "August 2026 Week 32") */}
-      <div className="flex items-center gap-2 ml-1">
-        <span className="font-bold text-slate-900 text-sm sm:text-base tracking-tight">
+      <div className="flex items-center gap-1.5 sm:gap-2 ml-0 sm:ml-1">
+        <span className="font-bold text-slate-900 text-xs sm:text-sm md:text-base tracking-tight">
           {getDisplayLabel()}
         </span>
         {badge && (
-          <span className="bg-slate-100 text-slate-800 text-xs font-semibold px-2 py-0.5 rounded-md border border-slate-200 shadow-2xs">
+          <span className="bg-slate-100 text-slate-800 text-[10px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 rounded-md border border-slate-200 shadow-2xs shrink-0">
             {badge}
           </span>
         )}

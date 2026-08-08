@@ -23,6 +23,7 @@ interface SidebarProps {
   sidebarOpen: boolean;
   activeItem: string;
   setActiveItem: (item: string) => void;
+  onCloseMobile?: () => void;
 }
 
 interface MenuItem {
@@ -37,7 +38,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   sidebarOpen,
   activeItem,
   setActiveItem,
+  onCloseMobile,
 }) => {
+  const handleItemClick = (itemLabel: string) => {
+    setActiveItem(itemLabel);
+    if (onCloseMobile) {
+      onCloseMobile();
+    }
+  };
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({
     Tasks: false,
     Surveillance: false,
@@ -207,7 +215,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         {item.children.map((subItem) => (
                           <button
                             key={subItem}
-                            onClick={() => setActiveItem(subItem)}
+                            onClick={() => handleItemClick(subItem)}
                             className="w-full text-left px-3 py-1.5 text-[11px] text-slate-600 hover:text-sky-600 hover:bg-slate-50 rounded-md transition-colors"
                           >
                             {subItem}
@@ -218,7 +226,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </div>
                 ) : (
                   <button
-                    onClick={() => setActiveItem(item.label)}
+                    onClick={() => handleItemClick(item.label)}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-xs font-medium transition-all ${
                       isActive
                         ? 'bg-[#29b6f6] text-white shadow-xs rounded-r-xl rounded-l-md font-semibold'

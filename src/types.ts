@@ -8,7 +8,7 @@ export type UserRole =
   | 'ALL_BRANCH_ROLE'
   | 'INSPECTOR';
 
-export type DeliveryCenterType = 'ALL' | 'HEAD_OFFICE' | 'BRANCH' | 'WOREDA';
+export type DeliveryCenterType = 'ALL' | 'HEAD_OFFICE' | 'ADDIS_MESOB' | 'BRANCH' | 'WOREDA';
 
 export type TimePeriod = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'QUARTERLY' | 'YEARLY' | 'CUSTOM';
 
@@ -36,6 +36,7 @@ export interface FilterState {
   period: TimePeriod;
   startDate?: string;
   endDate?: string;
+  selectedDate?: string;
   ownership: string;
   searchQuery: string;
 }
@@ -59,6 +60,7 @@ export interface CaseworkerPerformance {
   slaRate: number;
   branch: string;
   role: string;
+  provider?: 'AAFDA' | 'Addis Mesob';
 }
 
 export interface InspectorMetric {
