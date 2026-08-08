@@ -1,0 +1,6 @@
+{
+  "name": "License Management Dashboard",
+  "description": "Comprehensive License Management System dashboard for Health Professionals (HP), Health Facilities (HF), and Food & Health Related Institutions (FHR) with role-based access control and delivery center analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
