@@ -12,13 +12,13 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import {
-  Award,
-  AlertCircle,
-  CheckCircle,
-  Star,
-  Clock,
-  UserCheck,
-} from 'lucide-react';
+  IconAward as Award,
+  IconAlertCircle as AlertCircle,
+  IconCircleCheck as CheckCircle,
+  IconStar as Star,
+  IconClock as Clock,
+  IconUserCheck as UserCheck,
+} from '@tabler/icons-react';
 
 interface CaseworkerPerformanceProps {
   filters: FilterState;

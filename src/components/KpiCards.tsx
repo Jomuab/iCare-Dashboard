@@ -2,13 +2,13 @@ import React from 'react';
 import { FilterState } from '../types';
 import { getFilteredKpis } from '../utils/filterEngine';
 import {
-  ShieldCheck,
-  PlusCircle,
-  RefreshCw,
-  ArrowUpCircle,
-  Database,
-  TrendingUp,
-} from 'lucide-react';
+  IconShieldCheck as ShieldCheck,
+  IconCirclePlus as PlusCircle,
+  IconRefresh as RefreshCw,
+  IconCircleArrowUp as ArrowUpCircle,
+  IconDatabase as Database,
+  IconTrendingUp as TrendingUp,
+} from '@tabler/icons-react';
 
 interface KpiCardsProps {
   filters: FilterState;

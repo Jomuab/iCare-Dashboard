@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import {
-  Bell,
-  ChevronDown,
-  Globe,
-  Menu,
-  Shield,
-  User,
-  LogOut,
-  Settings,
-  HelpCircle,
-  X,
-  Check,
-  UserCheck,
-} from 'lucide-react';
+  IconBell as Bell,
+  IconChevronDown as ChevronDown,
+  IconGlobe as Globe,
+  IconMenu2 as Menu,
+  IconShield as Shield,
+  IconUser as User,
+  IconLogout as LogOut,
+  IconSettings as Settings,
+  IconHelpCircle as HelpCircle,
+  IconX as X,
+  IconCheck as Check,
+  IconUserCheck as UserCheck,
+} from '@tabler/icons-react';
 
 interface HeaderProps {
   toggleSidebar: () => void;

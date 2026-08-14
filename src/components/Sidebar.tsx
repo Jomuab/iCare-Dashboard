@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import {
-  FileText,
-  LayoutDashboard,
-  CheckSquare,
-  Eye,
-  Award,
-  ThumbsUp,
-  Building2,
-  AlertTriangle,
-  FileCheck,
-  Scale,
-  Users,
-  UserCheck,
-  Briefcase,
-  FileSpreadsheet,
-  ChevronDown,
-  ChevronRight,
-  ShieldAlert,
-} from 'lucide-react';
+  IconFileText as FileText,
+  IconLayoutDashboard as LayoutDashboard,
+  IconCheckbox as CheckSquare,
+  IconEye as Eye,
+  IconAward as Award,
+  IconThumbUp as ThumbsUp,
+  IconBuildingCommunity as Building2,
+  IconAlertTriangle as AlertTriangle,
+  IconFileCheck as FileCheck,
+  IconScale as Scale,
+  IconUsers as Users,
+  IconUserCheck as UserCheck,
+  IconBriefcase as Briefcase,
+  IconFileSpreadsheet as FileSpreadsheet,
+  IconChevronDown as ChevronDown,
+  IconChevronRight as ChevronRight,
+  IconShieldExclamation as ShieldAlert,
+} from '@tabler/icons-react';
 
 interface SidebarProps {
   sidebarOpen: boolean;

@@ -9,7 +9,12 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { PieChart as PieIcon, GitFork, ChevronRight, CheckCircle2 } from 'lucide-react';
+import {
+  IconChartPie as PieIcon,
+  IconGitFork as GitFork,
+  IconChevronRight as ChevronRight,
+  IconCircleCheck as CheckCircle2,
+} from '@tabler/icons-react';
 
 interface TaxonomyOwnershipSectionProps {
   filters: FilterState;

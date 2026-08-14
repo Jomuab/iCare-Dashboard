@@ -9,14 +9,14 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import {
-  Building,
-  Store,
-  FileCheck2,
-  PieChart as PieChartIcon,
-  GraduationCap,
-  Tag,
-  Sparkles,
-} from 'lucide-react';
+  IconBuilding as Building,
+  IconBuildingStore as Store,
+  IconFileCheck as FileCheck2,
+  IconChartPie as PieChartIcon,
+  IconSchool as GraduationCap,
+  IconTag as Tag,
+  IconSparkles as Sparkles,
+} from '@tabler/icons-react';
 
 interface ServiceBreakdownSectionProps {
   filters: FilterState;

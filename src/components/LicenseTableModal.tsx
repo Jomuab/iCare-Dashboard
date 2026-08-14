@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { FilterState, LicenseRecord } from '../types';
 import { getFilteredLicenseRecords } from '../utils/filterEngine';
 import {
-  Search,
-  Eye,
-  X,
-  Shield,
-  Printer,
-} from 'lucide-react';
+  IconSearch as Search,
+  IconEye as Eye,
+  IconX as X,
+  IconShield as Shield,
+  IconPrinter as Printer,
+} from '@tabler/icons-react';
 
 interface LicenseTableModalProps {
   licenses?: LicenseRecord[];

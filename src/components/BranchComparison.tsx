@@ -11,7 +11,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { Building, Award } from 'lucide-react';
+import { IconBuilding as Building, IconAward as Award } from '@tabler/icons-react';
 
 interface BranchComparisonProps {
   filters: FilterState;

@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { TimePeriod } from '../types';
-import { ChevronLeft, ChevronRight, Calendar, X, Check } from 'lucide-react';
+import {
+  IconChevronLeft as ChevronLeft,
+  IconChevronRight as ChevronRight,
+  IconCalendar as Calendar,
+  IconX as X,
+  IconCheck as Check,
+} from '@tabler/icons-react';
 
 interface PeriodNavigatorProps {
   period: TimePeriod;

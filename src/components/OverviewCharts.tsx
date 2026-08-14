@@ -19,7 +19,11 @@ import {
   BarChart,
   Bar,
 } from 'recharts';
-import { PieChart as PieIcon, TrendingUp, BarChart2 } from 'lucide-react';
+import {
+  IconChartPie as PieIcon,
+  IconTrendingUp as TrendingUp,
+  IconChartBar as BarChart2,
+} from '@tabler/icons-react';
 
 interface OverviewChartsProps {
   filters: FilterState;

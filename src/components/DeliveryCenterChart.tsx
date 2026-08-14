@@ -11,7 +11,12 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { Building2, Layers, BarChart2, Table } from 'lucide-react';
+import {
+  IconBuildingCommunity as Building2,
+  IconLayersIntersect as Layers,
+  IconChartBar as BarChart2,
+  IconTable as Table,
+} from '@tabler/icons-react';
 
 interface DeliveryCenterChartProps {
   filters: FilterState;

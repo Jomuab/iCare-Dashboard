@@ -1,6 +1,12 @@
 import React from 'react';
 import { UserRole } from '../types';
-import { ShieldCheck, Lock, Eye, AlertCircle, RefreshCw } from 'lucide-react';
+import {
+  IconShieldCheck as ShieldCheck,
+  IconLock as Lock,
+  IconEye as Eye,
+  IconAlertCircle as AlertCircle,
+  IconRefresh as RefreshCw,
+} from '@tabler/icons-react';
 
 interface RoleAccessBannerProps {
   currentRole: UserRole;

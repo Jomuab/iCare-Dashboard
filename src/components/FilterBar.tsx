@@ -7,20 +7,20 @@ import {
   BranchName,
 } from '../types';
 import {
-  Search,
-  RotateCcw,
-  Lock,
-  Download,
-  SlidersHorizontal,
-  MapPin,
-  X,
-  ChevronDown,
-  ChevronUp,
-  Calendar,
-  Building,
-  Tag,
-  Filter,
-} from 'lucide-react';
+  IconSearch as Search,
+  IconRotateClockwise2 as RotateCcw,
+  IconLock as Lock,
+  IconDownload as Download,
+  IconAdjustmentsHorizontal as SlidersHorizontal,
+  IconMapPin as MapPin,
+  IconX as X,
+  IconChevronDown as ChevronDown,
+  IconChevronUp as ChevronUp,
+  IconCalendar as Calendar,
+  IconBuilding as Building,
+  IconTag as Tag,
+  IconFilter as Filter,
+} from '@tabler/icons-react';
 import { PeriodNavigator } from './PeriodNavigator';
 
 interface FilterBarProps {
