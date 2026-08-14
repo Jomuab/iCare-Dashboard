@@ -24,6 +24,10 @@ import { TaxonomyOwnershipSection } from './components/TaxonomyOwnershipSection'
 import { CaseworkerPerformance } from './components/CaseworkerPerformance';
 import { BranchComparison } from './components/BranchComparison';
 import { LicenseTableModal } from './components/LicenseTableModal';
+import { ApplicationsListPage } from './components/applications/ApplicationsListPage';
+import { ApplicationDetailPage } from './components/applications/ApplicationDetailPage';
+import { APPLICATIONS_LIST_DATA } from './data/applicationData';
+import { LicensesPage } from './components/licenses/LicensesPage';
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(() => {
@@ -32,9 +36,11 @@ export default function App() {
     }
     return true;
   });
-  const [activeSidebarItem, setActiveSidebarItem] = useState('Dashboard');
+  const [activeSidebarItem, setActiveSidebarItem] = useState('Licenses');
+  const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null);
 
   // Active Role state for Access Control simulation
+
   const [currentRole, setCurrentRole] = useState<UserRole>('DIRECTORATE');
 
   // Filter State
@@ -203,39 +209,63 @@ export default function App() {
             roleDescription={getRoleDescription(currentRole)}
           />
 
-          {/* Filters Bar */}
-          <FilterBar
-            filters={filters}
-            setFilters={setFilters}
-            allowedCustomerTypes={getAllowedCustomerTypes(currentRole)}
-            allowedBranches={getAllowedBranches(currentRole)}
-            onReset={handleResetFilters}
-            onExport={handleExport}
-          />
+          {/* Render Licenses Page if Licenses menu is selected */}
+          {activeSidebarItem === 'Licenses' ? (
+            <LicensesPage />
+          ) : activeSidebarItem === 'Applications' ? (
+            selectedApplicationId ? (
+              <ApplicationDetailPage
+                application={
+                  APPLICATIONS_LIST_DATA.find((a) => a.id === selectedApplicationId) ||
+                  APPLICATIONS_LIST_DATA[0]
+                }
+                onBackToList={() => setSelectedApplicationId(null)}
+                onSelectApplication={(id) => setSelectedApplicationId(id)}
+                allApplications={APPLICATIONS_LIST_DATA}
+              />
+            ) : (
+              <ApplicationsListPage
+                applications={APPLICATIONS_LIST_DATA}
+                onSelectApplication={(id) => setSelectedApplicationId(id)}
+              />
+            )
+          ) : (
+            <>
+              {/* Filters Bar */}
+              <FilterBar
+                filters={filters}
+                setFilters={setFilters}
+                allowedCustomerTypes={getAllowedCustomerTypes(currentRole)}
+                allowedBranches={getAllowedBranches(currentRole)}
+                onReset={handleResetFilters}
+                onExport={handleExport}
+              />
 
-          {/* Section 1: KPI Metric Summary Cards */}
-          <KpiCards filters={filters} />
+              {/* Section 1: KPI Metric Summary Cards */}
+              <KpiCards filters={filters} />
 
-          {/* Section 2: Overview Applications, Licenses, Decisions Status */}
-          <OverviewCharts filters={filters} />
+              {/* Section 2: Overview Applications, Licenses, Decisions Status */}
+              <OverviewCharts filters={filters} />
 
-          {/* Section 3: License Distribution by Delivery Center */}
-          <DeliveryCenterChart filters={filters} />
+              {/* Section 3: License Distribution by Delivery Center */}
+              <DeliveryCenterChart filters={filters} />
 
-          {/* Section 4: Service Type Breakdown (Matches Screenshot 2 paired doughnut layout) */}
-          <ServiceBreakdownSection filters={filters} />
+              {/* Section 4: Service Type Breakdown (Matches Screenshot 2 paired doughnut layout) */}
+              <ServiceBreakdownSection filters={filters} />
 
-          {/* Section 5: Ownership Types & Taxonomy Hierarchy Browser */}
-          <TaxonomyOwnershipSection filters={filters} />
+              {/* Section 5: Ownership Types & Taxonomy Hierarchy Browser */}
+              <TaxonomyOwnershipSection filters={filters} />
 
-          {/* Section 6: Caseworker Performance Summary (Matches Screenshot 1 bottom graph & rankings) */}
-          <CaseworkerPerformance filters={filters} />
+              {/* Section 6: Caseworker Performance Summary (Matches Screenshot 1 bottom graph & rankings) */}
+              <CaseworkerPerformance filters={filters} />
 
-          {/* Section 7: Branch Comparison Dashboard */}
-          <BranchComparison filters={filters} />
+              {/* Section 7: Branch Comparison Dashboard */}
+              <BranchComparison filters={filters} />
 
-          {/* Section 8: License Register Data Table & Detail Preview Modal */}
-          <LicenseTableModal filters={filters} licenses={SAMPLE_LICENSES} />
+              {/* Section 8: License Register Data Table & Detail Preview Modal */}
+              <LicenseTableModal filters={filters} licenses={SAMPLE_LICENSES} />
+            </>
+          )}
         </div>
       </main>
     </div>

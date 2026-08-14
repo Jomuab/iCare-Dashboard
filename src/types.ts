@@ -107,3 +107,204 @@ export interface LicenseRecord {
   ownershipType?: string;
   facilityType?: string;
 }
+
+// ----------------------------------------------------
+// Applications Workflow Types (from AAFDA screenshots)
+// ----------------------------------------------------
+
+export type ApplicationStatus =
+  | 'Inprogress'
+  | 'In Progress'
+  | 'Success'
+  | 'critical'
+  | 'Critical'
+  | 'inspection'
+  | 'Inspection'
+  | 'Review'
+  | 'Payment'
+  | 'Submitted'
+  | 'Draft';
+
+export type ApplicationCategoryType = 'PROFESSIONAL' | 'COMPANY' | 'OTHER';
+
+export interface ApplicationDocumentFile {
+  id: string;
+  documentName: string;
+  isCommonFile: boolean;
+  isOptional: boolean;
+  version: number;
+  fileType: string;
+  fileSize: string;
+  uploadedAt: string;
+  status: 'VERIFIED' | 'PENDING' | 'REJECTED';
+  fileUrl?: string;
+  previewUrl?: string;
+}
+
+export interface EducationalDetails {
+  university: string;
+  universityAm?: string;
+  profession: string;
+  professionAm?: string;
+  qualificationDegree: string;
+  qualificationDegreeAm?: string;
+  fieldOfStudy: string;
+  fieldOfStudyAm?: string;
+  graduationDate: string;
+}
+
+export interface ChecklistItem {
+  id: string;
+  title: string;
+  description: string;
+  statusType: 'NOT_APPLICABLE' | 'SCORE_1' | 'SCORE_0' | 'COMPLIANT' | 'NON_COMPLIANT';
+  statusBadge: string;
+  stage: string;
+  category?: 'PREMISE' | 'PRODUCT' | 'PROFESSIONAL' | string;
+  status: 'MET' | 'UNMET' | 'NOT_APPLICABLE';
+  evaluationValue: 'MET' | 'UNMET' | 'N/A';
+  score: number;
+  maxScore: number;
+  deficiencyReason?: string;
+  correctiveAction?: string;
+  evaluatorComment?: string;
+  categoryCode?: string;
+  verifiedAt?: string;
+  verifiedBy?: string;
+  remarks?: string;
+}
+
+export interface ChecklistServiceGroup {
+  id: string;
+  name: string;
+  itemCount: number;
+  score: string;
+  metCount?: number;
+  unmetCount?: number;
+  naCount?: number;
+  category?: 'PREMISE' | 'PRODUCT' | 'PROFESSIONAL' | string;
+  tabCategory?: 'PREMISE' | 'PRODUCT' | 'PROFESSIONAL' | string;
+  items: ChecklistItem[];
+}
+
+export interface InspectionTeamMember {
+  name: string;
+  role: string;
+  email: string;
+  phone?: string;
+}
+
+export interface InspectionRecord {
+  id: string;
+  inspectionType: string;
+  inspection: string;
+  stages: string;
+  score: number | string;
+  round: string;
+  status: 'SUBMITTED' | 'IN_PROGRESS' | 'PENDING' | 'PASSED' | 'REJECTED';
+  facilitator: string;
+  team: InspectionTeamMember[];
+  checklistGroups: ChecklistServiceGroup[];
+  totalScore: string;
+  compliance: string;
+  metCount?: number;
+  unmetCount?: number;
+  naCount?: number;
+  itemsChecked: number;
+  totalCategories: number;
+  totalServiceGroups: number;
+  findingsSummary?: string;
+}
+
+export interface CurrentTaskDetail {
+  name: string;
+  description: string;
+  handlerType: string;
+  estimatedTime: string;
+  type: string;
+  inspectionStage: string;
+  pickedAt: string;
+  handlerUser: string;
+  handlerEmail?: string;
+  handlerPhone?: string;
+}
+
+export interface ApplicationDetail {
+  id: string;
+  trackingNumber: string;
+  categoryType?: ApplicationCategoryType;
+  organizationName: string;
+  organizationalService: string;
+  appliedAt: string;
+  currentStatus: string;
+  licenseTypeBadge?: string;
+  
+  // Overview
+  applicationNumber: string;
+  applicationStatus: string;
+  institutionStatus: string;
+  applicationType: string;
+  submittedAt: string;
+  service: string;
+  category: string;
+  organizationType: string;
+
+  // Applicant Details
+  applicantName: string;
+  applicantType?: string; // 'Local' | 'Diaspora' | 'Foreign'
+  houseNumber: string;
+  city: string;
+  subCity: string;
+  woreda: string;
+  email: string;
+  phoneNumber: string;
+  specificArea: string;
+
+  // Health Professional specific
+  educationalDetails?: EducationalDetails;
+  underSupervisionStatus?: string;
+  otherDetails?: string[];
+  files?: ApplicationDocumentFile[];
+
+  // Institution Details
+  institutionName: string;
+  institutionNameAm: string;
+  ownership: string;
+  serviceGroup: string;
+  subOrganization: string;
+  tradeName: string;
+  tinNumber: string;
+  businessRegistrationNo: string;
+  businessLicenseNo: string;
+
+  // Manager Details
+  managerName: string;
+  managerNameAm: string;
+  managerPhone: string;
+  managerAltPhone: string;
+
+  // Address Details
+  addressEmail: string;
+  addressPhone: string;
+  officePhone: string;
+  addressCity: string;
+  addressSubCity: string;
+  addressWoreda: string;
+  addressHouseNumber: string;
+  postalAddress: string;
+  addressSpecificArea: string;
+  website: string;
+  latitude: number | string;
+  longitude: number | string;
+
+  // Services and Products
+  selectedServices: string[];
+  selectedProducts: string;
+  franchise: string;
+  franchiser: string;
+
+  // Current Task & Inspections
+  currentTask: CurrentTaskDetail;
+  inspections: InspectionRecord[];
+}
+
